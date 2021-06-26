@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: db_container
+    image: postgres:13.2-alpine
+    context: ../
+    env_file:
+      - ./docker/.env
+    volumes:
+      - db_data:/var/lib/postgresql/data/ # we want to persist the data
+    entrypoint: /entry-point.sh
+    ports:
+      - "5434:5432"
+
+  golang:
+    container_name: golang_container
+    image: golang:1.16.5
+    env_file: ./docker/.env
+    # volumes:
+    #   - "../:/go/"
+    depends_on: db
+    ports:
+      - "5000:5000"
+
+volumes:
+  db_postgres:

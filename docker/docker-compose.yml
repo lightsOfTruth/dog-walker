@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: db_container
+    image: postgres:13.2-alpine
+    # build:
+    #   context: ./ # path to where the dockerfile is located
+    #   dockerfile: postgres-dockerfile
+    env_file:
+      - ./.env
+    command: ["postgres", "-c", "log_statement=all"]
+    volumes:
+      - db_postgres:/var/lib/postgresql/data/ # we want to persist the data
+    ports:
+      - "5432:5432"
+
+  golang:
+    container_name: golang_container
+    image: golang:1.16.5
+    # build:
+    #   context: ../ # path to where the dockerfile is located
+    env_file: ./.env
+    volumes:
+      - "/home/dev/development_work/sharedDockerVolumes/golangShared/:/go/"
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    tty: true
+    command: "/bin/bash"
+
+volumes:
+  db_postgres:
