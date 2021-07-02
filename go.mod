@@ -1,4 +1,4 @@
-module github.com/dogwalker
+module github.com/lightsOfTruth/dog-walker
 
 go 1.16
 
