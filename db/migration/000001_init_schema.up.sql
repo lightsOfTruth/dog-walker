@@ -1,39 +1,41 @@
 CREATE TABLE "users" (
-  "id" UUID PRIMARY KEY,
-  "full_name" varchar(255),
-  "dog" int,
-  "address" varchar(255),
-  "city" varchar(255),
-  "post_code" varchar(255),
-  "longitude" varchar(255),
-  "latitude" varchar(255),
-  "contact" varchar(255),
+  "id" UUID PRIMARY KEY NOT NULL,
+  "full_name" varchar(255) NOT NULL,
+  "contact" varchar(255) NOT NULL,
+  "dog" int DEFAULT NULL,
+  "address" varchar(255) NOT NULL,
+  "city" varchar(255) NOT NULL,
+  "post_code" varchar(255) NOT NULL,
+  "longitude" varchar(255) NOT NULL,
+  "latitude" varchar(255) NOT NULL,
   "created_at" timestamp DEFAULT 'NOW()'
 );
 
 CREATE TABLE "dog" (
-  "id" UUID PRIMARY KEY,
+  "id" UUID PRIMARY KEY NOT NULL,
   "name" varchar,
   "breed" varchar
 );
 
 CREATE TABLE "messages" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" UUID,
-  "message_body" text,
+  "conversation_id" SERIAL,
+  "sender_id" UUID,
+  "recipient_id" UUID,
+  "message_body" text NOT NULL,
   "created_at" timestamp DEFAULT 'now()'
 );
 
-CREATE TABLE "messages_receipient" (
+CREATE TABLE "conversation" (
   "id" SERIAL PRIMARY KEY,
-  "message_id" int,
-  "receiver_id" UUID,
+  "creator_id" UUID,
+  "recipient_id" UUID,
   "created_at" timestamp DEFAULT 'now()',
-  "status" smallint
+  "status" smallint DEFAULT 0
 );
 
-ALTER TABLE "messages" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "messages" ADD FOREIGN KEY ("sender_id") REFERENCES "users" ("id");
 
-ALTER TABLE "messages_receipient" ADD FOREIGN KEY ("message_id") REFERENCES "messages" ("id");
+ALTER TABLE "conversation" ADD FOREIGN KEY ("creator_id") REFERENCES "users" ("id");
 
-ALTER TABLE "messages_receipient" ADD FOREIGN KEY ("receiver_id") REFERENCES "users" ("id");
+ALTER TABLE "conversation" ADD FOREIGN KEY ("recipient_id") REFERENCES "users" ("id");

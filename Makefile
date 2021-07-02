@@ -2,7 +2,10 @@ def:
 	echo "ghel";
 
 migrateup:
-	migrate -path db/migration -database "postgresql://postgres:pass@localhost:5433/postgres?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgresql://postgres:pass@localhost:5444/postgres?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://postgres:pass@localhost:5433/postgres?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgresql://postgres:pass@localhost:5444/postgres?sslmode=disable" -verbose down
+
+sqlc:
+	sqlc generate

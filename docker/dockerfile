@@ -1,0 +1,16 @@
+
+# build stage
+FROM golang:alpine AS builder
+LABEL stage=builder
+WORKDIR /src
+RUN apk --no-cache add build-base git bzr gcc
+RUN echo "current folder $(pwd)"
+COPY ./go.sum ./go.mod ./
+ADD . /src
+RUN cd /src && CGO_ENABLED=0 GOOS=linux go build -a
+
+# final stage
+FROM alpine AS final
+WORKDIR /app
+COPY --from=builder /src/goapp /app/
+ENTRYPOINT ./goapp
