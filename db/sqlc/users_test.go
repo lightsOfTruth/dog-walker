@@ -12,9 +12,9 @@ import (
 var userInserted CreateUserParams
 
 func TestCreateUser(t *testing.T) {
-	userArgs := CreateUserParams{
+	userInserted := CreateUserParams{
 		ID: uuid.New(),
-		FullName: "Steve Austin",
+		FullName: "test user",
 		Contact: "01111111111",
 		Dog: sql.NullInt32{Int32: 1, Valid: true},
 		Address: "50 Gotham",
@@ -24,19 +24,18 @@ func TestCreateUser(t *testing.T) {
 		Latitude: "473987493",
 	}
 
-	userInserted = userArgs
 
-	user, err := testQueries.CreateUser(context.Background(), userArgs)
+	user, err := testQueries.CreateUser(context.Background(), userInserted)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
-	require.Equal(t, userArgs.FullName, user.FullName)
-	require.Equal(t, userArgs.Contact, user.Contact)
-	require.Equal(t, userArgs.Dog, user.Dog)
-	require.Equal(t, userArgs.Address, user.Address)
-	require.Equal(t, userArgs.City, user.City)
-	require.Equal(t, userArgs.PostCode, user.PostCode)
-	require.Equal(t, userArgs.Longitude, user.Longitude)
-	require.Equal(t, userArgs.Latitude, user.Latitude)
+	require.Equal(t, userInserted.FullName, user.FullName)
+	require.Equal(t, userInserted.Contact, user.Contact)
+	require.Equal(t, userInserted.Dog, user.Dog)
+	require.Equal(t, userInserted.Address, user.Address)
+	require.Equal(t, userInserted.City, user.City)
+	require.Equal(t, userInserted.PostCode, user.PostCode)
+	require.Equal(t, userInserted.Longitude, user.Longitude)
+	require.Equal(t, userInserted.Latitude, user.Latitude)
 
 }
 
