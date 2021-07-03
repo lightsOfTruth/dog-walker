@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ import (
 var userInserted CreateUserParams
 
 func TestCreateUser(t *testing.T) {
-	userInserted := CreateUserParams{
+	userInserted = CreateUserParams{
 		ID: uuid.New(),
 		FullName: "test user",
 		Contact: "01111111111",
@@ -24,7 +25,7 @@ func TestCreateUser(t *testing.T) {
 		Latitude: "473987493",
 	}
 
-
+	fmt.Printf("userinsertID is %v",userInserted.ID)
 	user, err := testQueries.CreateUser(context.Background(), userInserted)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
@@ -40,6 +41,9 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
+	fmt.Printf("userinsertID in get is %v\n",userInserted.ID)
+	// parsed, _ := uuid.Parse("66d7d7da-f078-4378-852e-680183d21f63")
+	// println(parsed.String())
 	user, err := testQueries.GetUser(context.Background(), userInserted.ID)
 
 	require.NoError(t, err)
