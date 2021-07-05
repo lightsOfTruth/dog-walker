@@ -14,18 +14,18 @@ var userInserted CreateUserParams
 
 func TestCreateUser(t *testing.T) {
 	userInserted = CreateUserParams{
-		ID: uuid.New(),
-		FullName: "test user",
-		Contact: "01111111111",
-		Dog: sql.NullInt32{Int32: 1, Valid: true},
-		Address: "50 Gotham",
-		City: "City",
-		PostCode: "D1 1AA",
+		ID:        uuid.New(),
+		FullName:  "test user",
+		Contact:   "01111111111",
+		Dog:       sql.NullInt32{Int32: 1, Valid: true},
+		Address:   "50 Gotham",
+		City:      "City",
+		PostCode:  "D1 1AA",
 		Longitude: "1268327832",
-		Latitude: "473987493",
+		Latitude:  "473987493",
 	}
 
-	fmt.Printf("userinsertID is %v",userInserted.ID)
+	fmt.Printf("userinsertID is %v", userInserted.ID)
 	user, err := testQueries.CreateUser(context.Background(), userInserted)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
@@ -41,7 +41,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	fmt.Printf("userinsertID in get is %v\n",userInserted.ID)
+	fmt.Printf("userinsertID in get is %v\n", userInserted.ID)
 	// parsed, _ := uuid.Parse("66d7d7da-f078-4378-852e-680183d21f63")
 	// println(parsed.String())
 	user, err := testQueries.GetUser(context.Background(), userInserted.ID)
@@ -55,23 +55,21 @@ func TestUpdateUser(t *testing.T) {
 	userInserted.City = "Metropolis"
 
 	user, err := testQueries.UpdateUser(context.Background(),
-	 UpdateUserParams{ID: userInserted.ID,
-		 Contact: userInserted.Contact,
-		  Address: userInserted.Address,
-		   City: userInserted.City,
-		   PostCode: userInserted.PostCode,
-		   Dog: userInserted.Dog,
+		UpdateUserParams{ID: userInserted.ID,
+			Contact:  userInserted.Contact,
+			Address:  userInserted.Address,
+			City:     userInserted.City,
+			PostCode: userInserted.PostCode,
+			Dog:      userInserted.Dog,
 		})
 
 	require.NoError(t, err)
 	require.Equal(t, userInserted.City, user.City)
 }
 
-
 func TestDeleteUser(t *testing.T) {
 	err := testQueries.DeleteUser(context.Background(), userInserted.ID)
 
 	require.NoError(t, err)
-
 
 }

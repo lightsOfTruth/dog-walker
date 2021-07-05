@@ -5,15 +5,14 @@ import (
 	db "github.com/lightsOfTruth/dog-walker/db/sqlc"
 )
 
-
 type Server struct {
-	store *db.Store
+	store  db.Store
 	router *gin.Engine
 }
 
-func NewServer(store *db.Store) Server{
-	server := Server{store: store}
-	server.router =  gin.Default()
+func NewServer(store db.Store) *Server {
+	server := &Server{store: store}
+	server.router = gin.Default()
 	server.router.POST("/createuser", server.createUser)
 
 	return server
@@ -25,5 +24,5 @@ func (server *Server) Start(address string) error {
 }
 
 func errorResponse(e error) gin.H {
-	return gin.H{"error": e.Error() }
+	return gin.H{"errors": e.Error()}
 }

@@ -16,4 +16,7 @@ test:
 server:
 	go run main.go
 
-.PHONY: migrateup migratedown server sqlc test
+mock:
+	mockgen -package mockdb -destination db/mock/store.go github.com/lightsOfTruth/dog-walker/db/sqlc Store
+
+.PHONY: migrateup migratedown server sqlc test mock
