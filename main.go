@@ -7,25 +7,27 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/lightsOfTruth/dog-walker/api"
 	db "github.com/lightsOfTruth/dog-walker/db/sqlc"
-)
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgres://postgres:pass@db:5432/postgres?sslmode=disable"
-	serverAddress = "0.0.0.0:5000"
+	"github.com/lightsOfTruth/dog-walker/helpers"
 )
 
 func main() {
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := helpers.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config", err)
+	}
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 
 	if err != nil {
 		log.Fatal("cannot connect to database", err)
 	}
 
 	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot start serevr", err)
+	}
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start serevr", err)
 	}

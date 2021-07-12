@@ -34,6 +34,8 @@ type Message struct {
 type User struct {
 	ID        uuid.UUID     `json:"id"`
 	FullName  string        `json:"full_name"`
+	Email     string        `json:"email"`
+	Password  string        `json:"password"`
 	Contact   string        `json:"contact"`
 	Dog       sql.NullInt32 `json:"dog"`
 	Address   string        `json:"address"`

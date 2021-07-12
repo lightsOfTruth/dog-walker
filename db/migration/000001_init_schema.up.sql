@@ -1,6 +1,8 @@
 CREATE TABLE "users" (
   "id" UUID PRIMARY KEY NOT NULL,
   "full_name" varchar(255) NOT NULL,
+  "email" varchar(255) NOT NULL,
+  "password" varchar(255) NOT NULL,
   "contact" varchar(255) NOT NULL,
   "dog" int DEFAULT NULL,
   "address" varchar(255) NOT NULL,

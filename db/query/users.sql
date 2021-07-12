@@ -2,6 +2,8 @@
 INSERT INTO users (
   id,
   full_name,
+  email,
+  password,
   contact,
   dog,
   address,
@@ -9,12 +11,16 @@ INSERT INTO users (
   post_code,
   longitude,
   latitude
-) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING *;
+) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING *;
 
 
--- name: GetUser :one
+-- name: GetUserById :one
 SELECT * FROM users
 WHERE id = $1;
+
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = $1;
 
 -- name: GetWalkers :many
 SELECT * FROM users ORDER BY name;

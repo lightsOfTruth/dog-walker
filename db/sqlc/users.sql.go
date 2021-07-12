@@ -14,6 +14,8 @@ const createUser = `-- name: CreateUser :one
 INSERT INTO users (
   id,
   full_name,
+  email,
+  password,
   contact,
   dog,
   address,
@@ -21,12 +23,14 @@ INSERT INTO users (
   post_code,
   longitude,
   latitude
-) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING id, full_name, contact, dog, address, city, post_code, longitude, latitude, created_at
+) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING id, full_name, email, password, contact, dog, address, city, post_code, longitude, latitude, created_at
 `
 
 type CreateUserParams struct {
 	ID        uuid.UUID     `json:"id"`
 	FullName  string        `json:"full_name"`
+	Email     string        `json:"email"`
+	Password  string        `json:"password"`
 	Contact   string        `json:"contact"`
 	Dog       sql.NullInt32 `json:"dog"`
 	Address   string        `json:"address"`
@@ -40,6 +44,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.ID,
 		arg.FullName,
+		arg.Email,
+		arg.Password,
 		arg.Contact,
 		arg.Dog,
 		arg.Address,
@@ -52,6 +58,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
+		&i.Email,
+		&i.Password,
 		&i.Contact,
 		&i.Dog,
 		&i.Address,
@@ -73,17 +81,44 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, full_name, contact, dog, address, city, post_code, longitude, latitude, created_at FROM users
-WHERE id = $1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, full_name, email, password, contact, dog, address, city, post_code, longitude, latitude, created_at FROM users
+WHERE email = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
+		&i.Email,
+		&i.Password,
+		&i.Contact,
+		&i.Dog,
+		&i.Address,
+		&i.City,
+		&i.PostCode,
+		&i.Longitude,
+		&i.Latitude,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT id, full_name, email, password, contact, dog, address, city, post_code, longitude, latitude, created_at FROM users
+WHERE id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.Email,
+		&i.Password,
 		&i.Contact,
 		&i.Dog,
 		&i.Address,
@@ -97,7 +132,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const getWalkers = `-- name: GetWalkers :many
-SELECT id, full_name, contact, dog, address, city, post_code, longitude, latitude, created_at FROM users ORDER BY name
+SELECT id, full_name, email, password, contact, dog, address, city, post_code, longitude, latitude, created_at FROM users ORDER BY name
 `
 
 func (q *Queries) GetWalkers(ctx context.Context) ([]User, error) {
@@ -112,6 +147,8 @@ func (q *Queries) GetWalkers(ctx context.Context) ([]User, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.FullName,
+			&i.Email,
+			&i.Password,
 			&i.Contact,
 			&i.Dog,
 			&i.Address,
@@ -142,7 +179,7 @@ city=$4,
 post_code=$5,
 dog=$6
 WHERE id = $1
-RETURNING id, full_name, contact, dog, address, city, post_code, longitude, latitude, created_at
+RETURNING id, full_name, email, password, contact, dog, address, city, post_code, longitude, latitude, created_at
 `
 
 type UpdateUserParams struct {
@@ -167,6 +204,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
+		&i.Email,
+		&i.Password,
 		&i.Contact,
 		&i.Dog,
 		&i.Address,

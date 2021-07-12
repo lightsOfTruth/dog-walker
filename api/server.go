@@ -1,21 +1,44 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/lightsOfTruth/dog-walker/authentication"
 	db "github.com/lightsOfTruth/dog-walker/db/sqlc"
+	"github.com/lightsOfTruth/dog-walker/helpers"
 )
 
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	store        db.Store
+	config       helpers.Config
+	tokenCreator authentication.TokenCreator
+	router       *gin.Engine
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config helpers.Config, store db.Store) (*Server, error) {
+	tokenCreator, err := authentication.NewJWTCreator(config.SecretKey)
+	if err != nil {
+		return nil, fmt.Errorf("token creation failed %w", err)
+	}
+
+	server := &Server{
+		store:        store,
+		config:       config,
+		tokenCreator: tokenCreator}
+
+	server.initRouter()
+
+	return server, nil
+}
+
+func (server *Server) initRouter() {
 	server.router = gin.Default()
 	server.router.POST("/createuser", server.createUser)
+	server.router.POST("/user/login", server.loginUser)
+	server.router.Group("/").Use(authMiddleware(server.tokenCreator))
 
-	return server
+	// all routes that should use auth middleware need authRoutes.POST instead of server.router
 }
 
 // router is private to this api package only because it is lowercased
