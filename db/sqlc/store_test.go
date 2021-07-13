@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/lightsOfTruth/dog-walker/helpers"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,10 +25,17 @@ func TestTransaction(t *testing.T) {
 
 	go func() {
 		for i := range [2]int{} {
+			hashedPassword, err := helpers.HashPassword(fmt.Sprintf("password%v", i+1))
+			if err != nil {
+				inserChan <- err
+			}
+
 			_, insertErr := store.CreateUser(context.Background(), CreateUserParams{
 				ID:        newUserUUIDs[i],
 				FullName:  fmt.Sprintf("test user %v", i+1),
-				Contact:   "01111111111",
+				Email:     fmt.Sprintf("testemail%v@email.com", i+1),
+				Password:  hashedPassword,
+				Contact:   "01111111112",
 				Dog:       sql.NullInt32{Int32: 1, Valid: true},
 				Address:   fmt.Sprintf("test address %v", i+1),
 				City:      fmt.Sprintf("city %v", i+1),
