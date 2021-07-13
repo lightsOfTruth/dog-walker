@@ -22,6 +22,7 @@ services:
     image: golang:1.16.5
     # build:
     #   context: ../ # path to where the dockerfile is located
+    #   dockerfile: docker/dockerfile
     env_file: ./.env
     volumes:
       - "/home/dev/development_work/sharedDockerVolumes/golangShared/:/go/"

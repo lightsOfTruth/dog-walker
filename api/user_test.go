@@ -149,3 +149,8 @@ func TestCreateUser(t *testing.T) {
 	require.Equal(t, userParams.FullName, returnedUser.FullName)
 	require.Equal(t, userParams.Dog.Int32, returnedUser.Dog)
 }
+
+// TODO: Write test for loginUser api
+func TestLoginUser(t *testing.T) {
+
+}

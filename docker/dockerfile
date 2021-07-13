@@ -3,19 +3,21 @@
 FROM golang:alpine AS builder
 LABEL stage=builder
 WORKDIR /app
-RUN apk --no-cache add build-base git bzr gcc curl
-RUN which migrate
+RUN apk --no-cache add build-base git gcc curl
 COPY . .
-RUN cd /src && CGO_ENABLED=0 go build -o main main.go
+RUN cd /app && CGO_ENABLED=0 go build -o main main.go
 RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
 
 # final stage
 FROM alpine AS final
-RUN apk add migrate
+RUN apk add
 WORKDIR /app
 COPY --from=builder /app/main .
 COPY --from=builder /app/migrate.linux-amd64 ./migrate
-COPY ../db/migration ./migration
+COPY app.env .
+COPY start.sh .
+COPY db/migration ./migration
 EXPOSE 8080
-ENTRYPOINT ["/app/start.sh"]
+RUN ls -al
 CMD ["/app/main"]
+ENTRYPOINT ["/app/start.sh"]
