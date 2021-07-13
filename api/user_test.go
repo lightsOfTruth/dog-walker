@@ -20,7 +20,8 @@ import (
 )
 
 type eqCreateUserParamsMatcher struct {
-	arg db.CreateUserParams
+	arg           db.CreateUserParams
+	plainPassword string
 }
 
 // Custom gomock matcher
@@ -31,11 +32,16 @@ func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 		return false
 	}
 
+	err := helpers.CheckPassword(e.plainPassword, xArg.Password)
+	if err != nil {
+		return false
+	}
+
 	eArgcreateUseParams := db.CreateUserParams{
 		ID:        xArg.ID,
 		FullName:  e.arg.FullName,
 		Email:     e.arg.Email,
-		Password:  e.arg.Password,
+		Password:  xArg.Password,
 		Contact:   e.arg.Contact,
 		Dog:       e.arg.Dog,
 		Address:   e.arg.Address,
@@ -66,8 +72,8 @@ func (e eqCreateUserParamsMatcher) String() string {
 	return fmt.Sprintf("is equal to %v (%T)", e.arg, e.arg)
 }
 
-func EqCreateUserParams(arg db.CreateUserParams) gomock.Matcher {
-	return eqCreateUserParamsMatcher{arg}
+func EqCreateUserParams(arg db.CreateUserParams, plainPassword string) gomock.Matcher {
+	return eqCreateUserParamsMatcher{arg, plainPassword}
 
 }
 
@@ -92,7 +98,7 @@ func TestCreateUser(t *testing.T) {
 
 	store := mockdb.NewMockStore(ctrl)
 
-	store.EXPECT().CreateUser(gomock.Any(), EqCreateUserParams(userParams)).
+	store.EXPECT().CreateUser(gomock.Any(), EqCreateUserParams(userParams, "testpassword")).
 		Times(1).
 		Return(db.User{
 			ID:        userParams.ID,
@@ -149,3 +155,8 @@ func TestCreateUser(t *testing.T) {
 	require.Equal(t, userParams.FullName, returnedUser.FullName)
 	require.Equal(t, userParams.Dog.Int32, returnedUser.Dog)
 }
+
+// TODO: Write test for loginUser api
+// func TestLoginUser(t *testing.T) {
+
+// }

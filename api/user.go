@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -62,11 +61,17 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := helpers.HashPassword(requestType.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": errorResponse(err)})
+		return
+	}
+
 	createUserDBArgs := db.CreateUserParams{
 		ID:        uuid.New(),
 		FullName:  requestType.FullName,
 		Email:     requestType.Email,
-		Password:  requestType.Password,
+		Password:  hashedPassword,
 		Contact:   requestType.Contact,
 		Dog:       requestType.Dog.NullInt32,
 		Address:   requestType.Address,
@@ -99,10 +104,7 @@ type LoginUserResponse struct {
 func (server *Server) loginUser(ctx *gin.Context) {
 	var requestType LoginUserRequestParams
 
-	fmt.Println(requestType)
-
 	if err := ctx.ShouldBindJSON(&requestType); err != nil {
-		fmt.Println("login2")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": errorResponse(err)})
 		return
 	}

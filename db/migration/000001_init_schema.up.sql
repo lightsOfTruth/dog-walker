@@ -1,8 +1,8 @@
 CREATE TABLE "users" (
   "id" UUID PRIMARY KEY NOT NULL,
   "full_name" varchar(255) NOT NULL,
-  "email" varchar(255) NOT NULL,
-  "password" varchar(255) NOT NULL,
+  "email" varchar(255) NOT NULL UNIQUE CHECK (email <> ''),
+  "password" varchar(255) NOT NULL CHECK (password <> ''),
   "contact" varchar(255) NOT NULL,
   "dog" int DEFAULT NULL,
   "address" varchar(255) NOT NULL,
@@ -35,6 +35,7 @@ CREATE TABLE "conversation" (
   "created_at" timestamp DEFAULT 'now()',
   "status" smallint DEFAULT 0
 );
+
 
 ALTER TABLE "messages" ADD FOREIGN KEY ("sender_id") REFERENCES "users" ("id");
 
