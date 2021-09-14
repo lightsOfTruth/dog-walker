@@ -5,7 +5,7 @@ services:
     container_name: db_container
     image: postgres:13.2-alpine
     # build:
-    #   context: ./ # path to where the dockerfile is located
+    #   context: ./
     #   dockerfile: postgres-dockerfile
     env_file:
       - ./.env
@@ -21,7 +21,7 @@ services:
     container_name: golang_container
     # image: golang:1.16.5
     build:
-      context: ../ # path to where the dockerfile is located
+      context: ../
       dockerfile: docker/dockerfile
     env_file: ./.env
     # volumes:
