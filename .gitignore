@@ -10,7 +10,7 @@
 bin/
 
 # local config file
-# app.env
+app.env
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -20,3 +20,5 @@ bin/
 
 # pkg
 pkg
+
+docker/.env
